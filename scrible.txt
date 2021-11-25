@@ -1,0 +1,133 @@
+
+def draw_boxes(img, bbox, object_id, identities=None, offset=(0, 0)):
+    # cv2.line(img, line2[0], line2[1], (0,200,0), 3)
+
+    height, width, _ = img.shape
+    # remove tracked point from buffer if object is lost
+    for key in list(data_deque):
+        if key not in identities:
+            data_deque.pop(key)
+
+    for i, box in enumerate(bbox):
+        x1, y1, x2, y2 = [int(i) for i in box]
+        x1 += offset[0]
+        x2 += offset[0]
+        y1 += offset[1]
+        y2 += offset[1]
+
+        # box_area = (x2-x1) * (y2-y1)
+
+        # code to find center of bottom edge
+        center = (int((x2 + x1) / 2), int((y2 + y2) / 2))
+
+        # get ID of object
+        id = int(identities[i]) if identities is not None else 0
+
+        # create new buffer for new object
+        if id not in data_deque:
+            data_deque[id] = deque(maxlen=64)
+            """time_deque[id] = deque(maxlen=64)
+            time_deque[id].appendleft(time.time())
+            speed_four_line_queue[id] = []
+            direction_queue[id] = []"""
+            dtime[id] = datetime.datetime.now()
+            dwell_time[id] = 0
+        else:
+            curr_time = datetime.datetime.now()
+            old_time = dtime[id]
+            time_diff = curr_time - old_time
+            dtime[id] = datetime.datetime.now()
+            sec = time_diff.total_seconds()
+            dwell_time[id] += sec
+
+        text = "{}|{}".format(id, int(dwell_time[id]))
+        print(text)
+        cv2.putText(img, text, (x1, y1 - 5), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 1)
+
+
+        color = compute_color_for_labels(object_id[i])
+        """obj_name = names[object_id[i]]
+        label = '%s' % (obj_name)"""
+
+        # add center to buffer
+        data_deque[id].appendleft(center)
+        # time_deque[id].appendleft(time.time())
+        """
+        time_deque[id].appendleft(time.time() - time_deque[id][-1])
+        # print("id ", id)
+        # print("data_deque[id] ", data_deque[id])
+        # print("time_deque[id] ", time_deque[id])
+
+        if len(data_deque[id]) >= 2:
+            # print("data_deque[id][i-1]", data_deque[id][1], data_deque[id][0])
+
+            if intersect(data_deque[id][0], data_deque[id][1], line2[0], line2[
+                1]): #or intersect(data_deque[id][0], data_deque[id][1], line1[0], line1[1]) or intersect(data_deque[id][0], data_deque[id][1], line3[0], line3[1]) or intersect(data_deque[id][0], data_deque[id][1], line4[0], line4[1]) :
+                #obj_direction = get_direction(data_deque[id][0], data_deque[id][1])
+                # print("Direction :", obj_direction)
+                cv2.line(img, line2[0], line2[1], (0, 100, 0), 3)
+
+                obj_speed = estimateSpeed(data_deque[id][1], data_deque[id][0])
+
+                speed_four_line_queue[id].append(obj_speed)
+                direction_queue[id].append(obj_direction)
+                print("Direction_queue ", id, direction_queue[id])
+                print("Obj_name :", obj_name)
+
+                if obj_name not in object_counter:
+                    object_counter[obj_name] = 1
+                else:
+                    object_counter[obj_name] += 1
+
+
+
+                    # object_counter_West[obj_name] += 1
+                    # object_counter_East[obj_name] += 1
+
+        try:
+            # label = label + " " + str(sum(speed_four_line_queue[id])//len(speed_four_line_queue[id]))
+            label = label + " " + str(sum(speed_four_line_queue[id]) // len(speed_four_line_queue[id])) + " " + \
+                    direction_queue[id][0]
+            # label = label
+        except:
+            pass
+
+        UI_box(box, img, label=label, color=color, line_thickness=2)"""
+
+        # draw trail
+        for i in range(1, len(data_deque[id])):
+            # check if on buffer value is none
+            if data_deque[id][i - 1] is None or data_deque[id][i] is None:
+                continue
+
+            # generate dynamic thickness of trails
+            thickness = int(np.sqrt(64 / float(i + i)) * 1.5)
+
+            # draw trails
+            cv2.line(img, data_deque[id][i - 1], data_deque[id][i], color, thickness)
+        # box text and bar
+        label = '{}{:d}'.format("", id)
+        t_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 2, 2)[0]
+        cv2.rectangle(img, (x1, y1), (x2, y2), color, 3)
+        cv2.rectangle(
+            img, (x1, y1), (x1 + t_size[0] + 3, y1 + t_size[1] + 4), color, -1)
+        cv2.putText(img, label, (x1, y1 +
+                                 t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, 2, [255, 255, 255], 2)
+    """count = 0
+
+    for idx, (key, value) in enumerate(object_counter.items()):
+        # print(idx, key, value)
+        cnt_str = str(key) + ": " + str(value)
+
+        #cv2.line(img, (width - 150, 25 + (idx * 40)), (width, 25 + (idx * 40)), [85, 45, 255], 30)
+        #cv2.putText(img, cnt_str, (width - 150, 35 + (idx * 40)), 0, 1, [225, 255, 255], thickness=2,
+                    #lineType=cv2.LINE_AA)
+
+        count += value"""
+
+
+
+    # return img, count, count_North, count_South, object_counter_North, object_counter_South
+    return img
+    #, count
+
