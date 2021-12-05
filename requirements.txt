@@ -7,13 +7,11 @@ numpy>=1.18.5
 opencv-python>=4.1.2
 Pillow
 PyYAML>=5.3.1
-
 scipy>=1.4.1
 tensorboard>=1.5
 torch==1.7.0
 torchvision==0.8.1
 tqdm>=4.41.0
-datetime
 
 # logging -------------------------------------
 # wandb
@@ -29,5 +27,6 @@ pandas
 
 # extras --------------------------------------
 thop  # FLOPS computation
-pycocotools  # COCO mAP
+pycocotools==2.0  # COCO mAP
 streamlit
+datetime
