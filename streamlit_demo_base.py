@@ -1,7 +1,7 @@
 # To run use
 #conda activate yolor_st
 # $ streamlit run streamlit_demo_base.py
-
+#project name - yolor_st
 #................
 # https://stackoverflow.com/questions/49392719/get-the-anaconda-prompt-running-in-the-pycharm-terminalconda env
 
